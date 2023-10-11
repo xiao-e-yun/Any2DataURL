@@ -1,0 +1,85 @@
+:root {
+  --focus: 9, 179, 108;
+  --main: 42, 42, 42;
+  --side-1: 100, 100, 100;
+  --side-2: 180, 180, 180;
+  --side-3: 200, 200, 200;
+  --bg: 220, 220, 220;
+  --shadow: 30, 30, 30;
+
+  font-weight: 600;
+  font-size: 24px;
+  @include pe {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    --focus: 66, 185, 131;
+    --main: 255, 242, 232;
+    --side-1: 165, 160, 155;
+    --side-2: 68, 68, 68;
+    --side-3: 51, 51, 51;
+    --bg: 30, 30, 30;
+    --shadow: 28, 28, 28;
+  }
+}
+
+.color1 {
+  background: rgb(var(--side-1));
+  & * {
+    color: color.bg();
+  }
+}
+
+.color2 {
+  background: rgb(var(--side-2));
+}
+
+.color3 {
+  background: rgb(var(--side-3));
+}
+
+//
+body {
+  background: color.bg();
+  overflow: overlay;
+  margin: 0;
+}
+
+* {
+  fill: color.main();
+  color: color.main();
+  box-sizing: border-box;
+  font-family: "Microsoft JhengHei";
+}
+
+a {
+  font-weight: bold;
+  color: color.focus();
+  text-decoration: none;
+}
+
+button {
+  border: none;
+  font-size: 1em;
+  cursor: pointer;
+  padding: 0.1em 0.4em;
+  border-radius: 0.4em;
+  background: color.side-3();
+  &:hover {
+    background: color.side-2();
+  }
+}
+
+select,
+input,
+textarea {
+  border: none;
+  font-size: 0.8em;
+  font-weight: 600;
+  padding: 0.2em 0.4em;
+  border-radius: 0.2em;
+  background: color.side-3();
+}

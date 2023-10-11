@@ -1,0 +1,21 @@
+@use "sass:math";
+@use "color";
+
+@mixin shadow($level: 1, $transition: false) {
+  box-shadow: 0 0 $level * .4em color.shadow(.6);
+  @if $transition {
+    transition: box-shadow .3s;
+  }
+}
+
+@mixin pe {
+  @media (max-width: 720px) {
+    @content;
+  }
+}
+
+@mixin pc {
+  @media (min-width: 1600px) {
+    @content;
+  }
+}

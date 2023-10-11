@@ -1,0 +1,32 @@
+@function opacity($color,$opacity){
+  @if $opacity==1 { @return #{"rgb("+$color+")"} }
+  @else { @return #{"rgba("+$color+","+$opacity+")"} }
+}
+
+@function focus($opacity:1) {
+  @return opacity("var(--focus)",$opacity);
+}
+
+@function main($opacity:1) {
+  @return opacity("var(--main)",$opacity);
+}
+
+@function side-1($opacity:1) {
+  @return opacity("var(--side-1)",$opacity);
+}
+
+@function side-2($opacity:1) {
+  @return opacity("var(--side-2)",$opacity);
+}
+
+@function side-3($opacity:1) {
+  @return opacity("var(--side-3)",$opacity);
+}
+
+@function bg($opacity:1) {
+  @return opacity("var(--bg)",$opacity);
+}
+
+@function shadow($opacity:1) {
+  @return opacity("var(--shadow)",$opacity);
+}
