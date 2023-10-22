@@ -1,19 +1,38 @@
 <template>
   <main>
     <div class="preview split" @drop.prevent="dropHandler" @dragover.prevent @click="uploadImageEl!.click()">
-      <h1 v-if="!current">Select image to DataURL</h1>
+      <h1 v-if="!current">Drag or Select File to DataURL</h1>
       <template v-else>
         <img v-if="current.url" :src="current.url">
         <span>{{ current.name }}</span>
         <CopyVue class="copy" @click.stop="copy(current)" />
       </template>
       <input type="file" @change="inputHandler" ref="uploadImageEl">
-      
+
     </div>
-    
+    <Teleport to="#phone-info" v-if="ready" :disabled="!isPhone">
+      <div class="split info">
+        <a href="https://github.com/xiao-e-yun/imageToDataURL">
+          <h2>Any2DataURL
+            <svg xmlns="http://www.w3.org/2000/svg" class="github" fill="currentColor" viewBox="0 0 16 16">
+              <path
+                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+            </svg>
+          </h2>
+        </a>
+        <p>Parse Any (Image, Text, Blob, etc..) File to DataURL.</p>
+        <ul>
+          <li>Fastest</li>
+          <li>Record</li>
+          <li>Local</li>
+        </ul>
+        <span><a href="https://xiaoeyun.me">Our Website</a></span>
+      </div>
+    </Teleport>
+
   </main>
   <aside>
-    <div v-if="logs.length===0">
+    <div v-if="logs.length === 0" class="no-record">
       <h2>Records</h2>
       <p>It will be kept here until the page is closed or reload.</p>
       <p>You can click to copy DataURL.</p>
@@ -24,15 +43,26 @@
       <CopyVue class="copy" @click.stop="copy(log)" />
     </div>
   </aside>
+
+  <div id="phone-info" />
+
+
+
   <div v-if="copied" class="popper">
-    `{{copied}}` was copied
+    `{{ copied }}` was copied
   </div>
 </template>
 
 <script setup lang="ts">
 import { blobToData } from "./main.ts"
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import CopyVue from "./components/Copy.vue"
+import { useMediaQuery } from "@vueuse/core"
+
+const ready = ref(false)
+onMounted(() => ready.value = true)
+
+const isPhone = useMediaQuery('(max-width: 720px)')
 
 const uploadImageEl = ref<HTMLInputElement>()
 
@@ -46,11 +76,11 @@ async function dropHandler(event: DragEvent) {
 
 const copied = ref<string>()
 async function copy(pack: Pack) {
-  if(copied.value === pack.name) return
+  if (copied.value === pack.name) return
   const url = await blobToData(pack.file)
   await navigator.clipboard.writeText(url)
   copied.value = pack.name
-  setTimeout(()=>copied.value=undefined,5000)
+  setTimeout(() => copied.value = undefined, 5000)
 }
 
 function inputHandler(event: Event) {
@@ -62,7 +92,7 @@ function inputHandler(event: Event) {
 
 async function upload(file: File) {
   if (!file) return
-  
+
   const name = file.name
   let url = file.type.startsWith("image/") ? URL.createObjectURL(file) : undefined
 
@@ -91,6 +121,7 @@ interface Pack {
   display: flex;
 
   overflow: hidden;
+
   @include pe {
     overflow: auto;
     flex-direction: column;
@@ -99,20 +130,24 @@ interface Pack {
 
 main {
   width: 70%;
-  gap: .4em;
   display: flex;
-  padding: .4em;
   flex-direction: column;
 
-  
+
   @include pe {
     width: 100%;
   }
-  & > .split {
-    height: 50%;
-    @include pe {
-      height: 50vw;
-    }
+}
+
+.split {
+  height: 50%;
+  margin: .4em;
+  @include shadow;
+  border-radius: .4em;
+  background: color.side-3();
+
+  @include pe {
+    height: 50vw;
   }
 }
 
@@ -124,18 +159,32 @@ aside {
   & h2 {
     margin: 1em 0 0 0;
   }
-
+  
   & p {
     margin: 0;
   }
 
   @include pe {
-    overflow: visible;
     height: auto;
-    width: 100%;
+    width: calc(100%);
+    overflow: visible;
+    & > .no-record {
+      @include shadow;
+      background: color.side-2();
+      padding: 1em 0.4em 1.2em;
+      height: auto;
+  
+      background: color.side-3();
+      border-radius: .4em;
+      margin: .4em;
+      & h2, & p {
+        margin: .2em 0 ;
+        text-align: center;
+      }
+    }
   }
 
-  & > .item {
+  &>.item {
     margin: .4em;
     @include shadow;
     overflow: hidden;
@@ -144,13 +193,17 @@ aside {
     border-radius: .4em;
     background: color.side-3();
     cursor: pointer;
-    
+
     &:hover {
       & .copy {
         opacity: 1;
+
+        &>path {
+          fill: #fff2e8;
+        }
       }
 
-      & > img {
+      &>img {
         filter: brightness(30%);
       }
     }
@@ -166,7 +219,7 @@ aside {
       opacity: 0;
     }
 
-    & > span {
+    &>span {
       position: absolute;
       margin: 1em .4em;
       border-radius: .4em;
@@ -174,9 +227,9 @@ aside {
       font-size: .6em;
       background: color.bg();
     }
-    
 
-    & > img {
+
+    &>img {
       left: 0;
       bottom: 0;
       width: 100%;
@@ -192,11 +245,8 @@ aside {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: color.side-3();
-  border-radius: .4em;
   position: relative;
-  @include shadow;
-  
+
   & .copy {
     position: absolute;
     right: .6em;
@@ -210,7 +260,7 @@ aside {
     background: color.side-2(.6);
   }
 
-  & > img {
+  &>img {
     border-radius: 1.4em;
     object-fit: contain;
     position: absolute;
@@ -219,7 +269,7 @@ aside {
     width: 100%;
   }
 
-  & > span {
+  &>span {
     position: absolute;
     bottom: .5em;
     left: .5em;
@@ -230,8 +280,24 @@ aside {
     border-radius: .4em;
   }
 
-  & > input {
+  &>input {
     display: none;
+  }
+}
+
+.info {
+  position: relative;
+  overflow: overlay;
+  padding: 1em;
+
+  & span {
+    position: absolute;
+    bottom: .5em;
+    right: .5em;
+  }
+
+  & h2 {
+    margin: 0 0 1em 0;
   }
 }
 
@@ -253,4 +319,8 @@ aside {
 .copy {
   height: 80%;
 }
-</style>
+
+.github {
+  width: .8em;
+  height: .8em;
+}</style>
