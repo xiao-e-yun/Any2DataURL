@@ -1,5 +1,5 @@
-# Image2DataURL
-Convert Image to DataURL by JS.
+# Any2Image
+Parse Any (Image, Text, Blob, etc..) File to DataURL
 - Fastest
 - Record 
 - Local
