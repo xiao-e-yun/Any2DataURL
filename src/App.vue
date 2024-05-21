@@ -26,7 +26,9 @@
           <li>Record</li>
           <li>Local</li>
         </ul>
+        <!--
         <span><a href="https://xiaoeyun.me">Our Website</a></span>
+        -->
       </div>
     </Teleport>
 
